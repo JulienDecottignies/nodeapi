@@ -1,0 +1,9 @@
+{
+    "user": "julien",
+    "password": "Dks2019$",
+    "server": "localhost",
+    "options": { 
+        "instanceName": "SQLEXPRESS" 
+    },
+    "database": "nodeconnect"
+}
