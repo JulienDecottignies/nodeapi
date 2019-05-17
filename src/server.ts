@@ -1,18 +1,19 @@
 import * as sql from "mssql";
 import * as bodyParser from "body-parser";
 import express = require('express');
-import { Server } from "http";
 
 const app: express.Application = express();
+let router = express.Router();
 
 // app.set('case sensitive routing', true);
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
-var server = app.listen(3000, () => {
+const server = app.listen(3000, () => {
         console.log(`running on port 3000`);
 });
 
-var dbConfig: sql.config = {
+const dbConfig: sql.config = {
     user: 'julien',
     password: 'Dks2019$',
     server: 'localhost',
@@ -23,12 +24,15 @@ var dbConfig: sql.config = {
 }
 
 
+
+
+
 var executeQuery = (response: express.Response, query: string) => {
 
     let connection: sql.ConnectionPool = new sql.ConnectionPool(dbConfig, (err: any) => {
         if (err) {
             console.log(`An error occured: ${err}`);
-            response.send(err);
+            response.status(400).send(err);
         }
 
 
@@ -41,31 +45,59 @@ var executeQuery = (response: express.Response, query: string) => {
             sqlRequest.query(query, (err: any, sqlResponse: any) => {
                 if (err) {
                     console.log(`Error while querying the database: ${err}`);
-                    response.send(err);
+                    response.status(400).send(err);
                 }
                 else {
-                    response.send(sqlResponse);
+                    response.status(200).send(sqlResponse);
                 }
             });
         }
     });
 }
 
-// Get API
+// GET ALL API
 
 app.get('/api/user', (req: express.Request, response: express.Response) => {
-    console.log('get');
-    let query = `SELECT * FROM [user]`;
-    executeQuery(response, query);
+    let query: string = 'SELECT * FROM [dbo].[user]';
+
+  executeQuery(response, query);
 });
 
-app.post('/api/user', (req: express.Request, response: express.Response) => {
-    console.log('post');
-    let query = 'INSERT INTO [user] (name) VALUES (\'nico\')';
+// GET SINGLE API
+
+app.get('/api/user/:user_id', (req: express.Request, response: express.Response) => {
+    let id: number = parseInt(req.params.user_id);
+
+    let query: string = `SELECT * FROM [dbo].[user] WHERE id = \'${id}\'`;
+
     executeQuery(response, query);
-});
-
-
-app.get('api/getAzure', (req: express.Request, response: express.Response) => {
-    response.send('response from node app azure hosted received !');
 })
+
+// POST API
+app.post('/api/user', (req: express.Request, response: express.Response) => {
+    let id: number = req.body.id;
+    let name: string = req.body.name;
+    let email: string = req.body.email;
+    
+    let query: string = `INSERT INTO [dbo].[user] (id, name, email) VALUES (\'${id}\', \'${name}\', \'${email}')`;
+    executeQuery(response, query);
+});
+
+// PUT API
+app.put('/api/user/:id', (req: express.Request, response: express.Response) => {
+    let id: number = parseInt(req.params.id);
+    let newEmail: string = req.body.email;
+
+    let query: string = `UPDATE [dbo].[user] SET email = \'${newEmail}\' WHERE id = \'${id}\'`;
+
+    executeQuery(response, query);
+});
+
+// DELETE API
+app.delete('/api/user/:id', (req: express.Request, response: express.Response) => {
+    let id: number = parseInt(req.params.id);
+
+    let query: string = `DELETE from [dbo].[user] WHERE id = \'${id}\'`;
+
+    executeQuery(response, query);
+});
