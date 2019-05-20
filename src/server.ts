@@ -1,6 +1,5 @@
 import * as bodyParser from "body-parser";
 import express = require('express');
-
 const app: express.Application = express();
 
 app.use(bodyParser.json());

@@ -1,0 +1,9 @@
+{
+    "user": "<dbuser>",
+    "password": "<dbpassword",
+    "server": "<dbserver>",
+    "options": { 
+        "instanceName": "<dbinstance>" 
+    },
+    "database": "dbname"
+}

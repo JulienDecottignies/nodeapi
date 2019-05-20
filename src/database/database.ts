@@ -1,5 +1,5 @@
 import * as sql from "mssql";
-import dbconfig from "../dbconfig.json";
+import dbconfig from "./dbconfig.json";
 import express = require('express');
 
 const dbConfig: sql.config = dbconfig;
